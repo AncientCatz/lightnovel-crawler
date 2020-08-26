@@ -27,8 +27,12 @@ class NovelGoCrawler(Crawler):
             'h2', {'class': 'novel-title'}).text.strip()
         logger.info('Novel title: %s', self.novel_title)
 
-        self.novel_author = soup.select_one(
-            'div.noveils-current-author a').text.strip()
+        try:
+            self.novel_author = soup.select_one(
+                'div.noveils-current-author a').text.strip()
+        except Exception:
+            self.novel_author = "Translated by novelgo.id"
+        # end try
         logger.info('Novel author: %s', self.novel_author)
 
         #thumbnail = soup.find("div", {"class": "novel-thumbnail"})['style']
