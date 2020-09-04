@@ -171,6 +171,7 @@ class TelegramBot:
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
             )
+            self.destroy_app(bot, update, user_data)
         else :
             update.message.reply_text(
                 'I recognize input of these two categories:\n'
