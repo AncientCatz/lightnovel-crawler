@@ -23,6 +23,9 @@ available_formats = [
     'mobi',
     'pdf',
 ]
+allowed_list = [
+    'AncientCatz',
+]
 
 
 class TelegramBot:
@@ -164,13 +167,18 @@ class TelegramBot:
         user_data['app'] = app
         update.message.reply_text('A new session is created.')
 
-        update.message.reply_text(
-            'I recognize input of these two categories:\n'
-            '- Profile page url of a lightnovel.\n'
-            '- A query to search your lightnovel.\n'
-            'Enter whatever you want or send /cancel to stop.'
-        )
-        return 'handle_novel_url'
+        if update.message.from_user.username not in allowed_list :
+            update.message.reply_text(
+                'Sorry you\'re not my master, you\'re not allowed to use my services \n'
+            )
+        else :
+            update.message.reply_text(
+                'I recognize input of these two categories:\n'
+                '- Profile page url of a lightnovel.\n'
+                '- A query to search your lightnovel.\n'
+                'Enter whatever you want or send /cancel to stop.'
+            )
+            return 'handle_novel_url'
     # end def
 
     def handle_novel_url(self, bot, update, user_data):
