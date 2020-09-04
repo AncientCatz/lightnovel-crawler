@@ -24,7 +24,6 @@ available_formats = [
     'pdf',
 ]
 allowed_list = [
-    'AncientCatz',
 ]
 
 
