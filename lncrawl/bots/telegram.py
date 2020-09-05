@@ -42,6 +42,10 @@ class TelegramBot:
         # Add a command helper for help
         dp.add_handler(CommandHandler('help', self.show_help))
 
+        # Add a cancel command
+        dp.add_handler(CommandHandler('cancel', self.destroy_app, pass_user_data=True))
+
+
         # Add conversation handler with states
         conv_handler = ConversationHandler(
             entry_points=[
