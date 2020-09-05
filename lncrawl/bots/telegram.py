@@ -23,7 +23,8 @@ available_formats = [
     'mobi',
     'pdf',
 ]
-allowed_list = [
+whitelist_users=[
+    'AncientCatz',
 ]
 
 
@@ -44,7 +45,7 @@ class TelegramBot:
         # Add conversation handler with states
         conv_handler = ConversationHandler(
             entry_points=[
-                CommandHandler('start', self.init_app, pass_user_data=True),
+                CommandHandler('start', self.init_app, Filters.chat(username=whitelist_users, self.valid_users), pass_user_data=True),
                 MessageHandler(
                     Filters.text, self.handle_novel_url, pass_user_data=True),
             ],
@@ -55,13 +56,13 @@ class TelegramBot:
             states={
                 'handle_novel_url': [
                     MessageHandler(
-                        Filters.text, self.handle_novel_url, pass_user_data=True),
+                        Filters.chat(username=whitelist_users, self.valid_users), self.handle_novel_url, pass_user_data=True),
                 ],
                 'handle_crawler_to_search': [
                     CommandHandler(
                         'skip', self.handle_crawler_to_search, pass_user_data=True),
                     MessageHandler(
-                        Filters.text, self.handle_crawler_to_search, pass_user_data=True),
+                        Filters.chat(username=whitelist_users, self.valid_users), self.handle_crawler_to_search, pass_user_data=True),
                 ],
                 'handle_select_novel': [
                     MessageHandler(
@@ -126,6 +127,12 @@ class TelegramBot:
         # start_polling() is non-blocking and will stop the bot gracefully.
         self.updater.idle()
     # end def
+    
+    def valid_users(self, bot, update):
+    	update.message.reply_text(
+            'You are a valid user'
+        )
+    # end def
 
     def error_handler(self, bot, update, error):
         """Log Errors caused by Updates."""
@@ -166,19 +173,13 @@ class TelegramBot:
         user_data['app'] = app
         update.message.reply_text('A new session is created.')
 
-        if update.message.from_user.username not in allowed_list :
-            update.message.reply_text(
-                'Sorry you\'re not my master, you\'re not allowed to use my services \n'
-            )
-            self.destroy_app(bot, update, user_data)
-        else :
-            update.message.reply_text(
-                'I recognize input of these two categories:\n'
-                '- Profile page url of a lightnovel.\n'
-                '- A query to search your lightnovel.\n'
-                'Enter whatever you want or send /cancel to stop.'
-            )
-            return 'handle_novel_url'
+        update.message.reply_text(
+            'I recognize input of these two categories:\n'
+            '- Profile page url of a lightnovel.\n'
+            '- A query to search your lightnovel.\n'
+            'Enter whatever you want or send /cancel to stop.'
+        )
+        return 'handle_novel_url'
     # end def
 
     def handle_novel_url(self, bot, update, user_data):
