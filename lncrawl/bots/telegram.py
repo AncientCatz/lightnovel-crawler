@@ -13,7 +13,7 @@ from ..core.app import App
 from ..sources import crawler_list
 from ..utils.uploader import upload
 
-logger = logging.getLogger('TELEGRAM_BOT')
+logger = logging.getLogger(__name__)
 
 
 available_formats = [
@@ -22,9 +22,6 @@ available_formats = [
     'web',
     'mobi',
     'pdf',
-]
-allowed_list = [
-    'AncientCatz',
 ]
 
 
@@ -41,13 +38,6 @@ class TelegramBot:
 
         # Add a command helper for help
         dp.add_handler(CommandHandler('help', self.show_help))
-
-        # Add a cancel command
-        dp.add_handler(CommandHandler('cancel', self.destroy_app, pass_user_data=True))
-
-        # Add a start command
-        dp.add_handler(CommandHandler('start', self.init_app, pass_user_data=True))
-
 
         # Add conversation handler with states
         conv_handler = ConversationHandler(
@@ -174,19 +164,13 @@ class TelegramBot:
         user_data['app'] = app
         update.message.reply_text('A new session is created.')
 
-        if update.message.from_user.username not in allowed_list :
-            update.message.reply_text(
-                'Sorry you\'re not my master, you\'re not allowed to use my services \n'
-            )
-            self.destroy_app(bot, update, user_data)
-        else :
-            update.message.reply_text(
-                'I recognize input of these two categories:\n'
-                '- Profile page url of a lightnovel.\n'
-                '- A query to search your lightnovel.\n'
-                'Enter whatever you want or send /cancel to stop.'
-            )
-            return 'handle_novel_url'
+        update.message.reply_text(
+            'I recognize input of these two categories:\n'
+            '- Profile page url of a lightnovel.\n'
+            '- A query to search your lightnovel.\n'
+            'Enter whatever you want or send /cancel to stop.'
+        )
+        return 'handle_novel_url'
     # end def
 
     def handle_novel_url(self, bot, update, user_data):
