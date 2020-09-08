@@ -12,7 +12,7 @@ from telegram.ext import (CommandHandler, ConversationHandler, Filters,
 from ..core.app import App
 from ..sources import crawler_list
 from ..utils.uploader import upload
-from tg_vip import whitelist
+from .tg_vip import whitelist
 
 logger = logging.getLogger('TELEGRAM_BOT')
 
