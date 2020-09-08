@@ -21,8 +21,9 @@ class WuxiaCoCrawler(Crawler):
 
     def search_novel(self, query):
         '''Gets a list of {title, url} matching the given query'''
-        response = self.submit_form(search_url, data=dict(keyword=query, t=1))
-        soup = self.make_soup(response)
+        url = search_url % query.lower()
+        logger.debug('Visiting %s', url)
+        soup = self.get_soup(url)
 
         results = []
         for li in soup.select('ul.result-list li'):
@@ -32,7 +33,7 @@ class WuxiaCoCrawler(Crawler):
 
             results.append({
                 'title': title,
-                'url': self.absolute_url(a['href']),
+                'url': self.absolute_url(a),
                 'info': author,
             })
         # end for
