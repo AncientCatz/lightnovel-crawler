@@ -12,7 +12,8 @@ from telegram.ext import (CommandHandler, ConversationHandler, Filters,
 from ..core.app import App
 from ..sources import crawler_list
 from ..utils.uploader import upload
-from .tg_vip import whitelist
+# from .tg_vip import whitelist
+import .tg_vip
 
 logger = logging.getLogger('TELEGRAM_BOT')
 
@@ -165,7 +166,7 @@ class TelegramBot:
         user_data['app'] = app
         update.message.reply_text('A new session is created.')
 
-        if update.message.from_user.username not in whitelist :
+        if update.message.from_user.username not in tg_vip.whitelist :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
             )
@@ -181,7 +182,7 @@ class TelegramBot:
     # end def
 
     def handle_novel_url(self, bot, update, user_data):
-        if update.message.from_user.username not in whitelist :
+        if update.message.from_user.username not in tg_vip.whitelist :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
             )
