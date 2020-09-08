@@ -30,7 +30,8 @@ Whitelist users
 """
 
 whitelist = [
-    "AncientCatz",
+    'AncientCatz',
+    'dindaresty3',
 ]
 
 class TelegramBot:
