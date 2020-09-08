@@ -13,7 +13,7 @@ from ..core.app import App
 from ..sources import crawler_list
 from ..utils.uploader import upload
 # from .tg_vip import whitelist
-import .tg_vip
+from .tg_vip import *
 
 logger = logging.getLogger('TELEGRAM_BOT')
 
