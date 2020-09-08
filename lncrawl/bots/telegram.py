@@ -13,7 +13,6 @@ from ..core.app import App
 from ..sources import crawler_list
 from ..utils.uploader import upload
 # from .tg_vip import whitelist
-from .tg_vip import *
 
 logger = logging.getLogger('TELEGRAM_BOT')
 
@@ -26,6 +25,13 @@ available_formats = [
     'azw3',
 ]
 
+"""
+Whitelist users
+"""
+
+whitelist = [
+    "AncientCatz",
+]
 
 class TelegramBot:
     def start(self):
