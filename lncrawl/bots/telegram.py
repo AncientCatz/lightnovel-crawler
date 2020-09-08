@@ -47,6 +47,10 @@ class TelegramBot:
         # Add a command helper for help
         dp.add_handler(CommandHandler('help', self.show_help))
 
+        #
+        dp.add_handler(CommandHandler('start', self.init_app, pass_user_data=True))
+        dp.add_handler(CommandHandler('cancel', self.destroy_app, pass_user_data=True))
+
         # Add conversation handler with states
         conv_handler = ConversationHandler(
             entry_points=[
@@ -55,8 +59,7 @@ class TelegramBot:
                     Filters.text, self.handle_novel_url, pass_user_data=True),
             ],
             fallbacks=[
-                CommandHandler('cancel', self.destroy_app,
-                               pass_user_data=True),
+                CommandHandler('cancel', self.destroy_app, pass_user_data=True),
             ],
             states={
                 'handle_novel_url': [
@@ -64,8 +67,7 @@ class TelegramBot:
                         Filters.text, self.handle_novel_url, pass_user_data=True),
                 ],
                 'handle_crawler_to_search': [
-                    CommandHandler(
-                        'skip', self.handle_crawler_to_search, pass_user_data=True),
+                    CommandHandler('skip', self.handle_crawler_to_search, pass_user_data=True),
                     MessageHandler(
                         Filters.text, self.handle_crawler_to_search, pass_user_data=True),
                 ],
