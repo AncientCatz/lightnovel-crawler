@@ -175,6 +175,7 @@ class TelegramBot:
         if update.message.from_user.username not in whitelist :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
+                'Contact to my master @AncientCatz \n'
             )
             self.destroy_app(bot, update, user_data)
         else :
@@ -191,6 +192,7 @@ class TelegramBot:
         if update.message.from_user.username not in whitelist :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
+                'Contact to my master @AncientCatz \n'
             )
             self.destroy_app(bot, update, user_data)
         else :
