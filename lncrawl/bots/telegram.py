@@ -166,7 +166,7 @@ class TelegramBot:
         user_data['app'] = app
         update.message.reply_text('A new session is created.')
 
-        if update.message.from_user.username not in tg_vip.whitelist :
+        if update.message.from_user.username not in whitelist :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
             )
@@ -182,7 +182,7 @@ class TelegramBot:
     # end def
 
     def handle_novel_url(self, bot, update, user_data):
-        if update.message.from_user.username not in tg_vip.whitelist :
+        if update.message.from_user.username not in whitelist :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
             )
