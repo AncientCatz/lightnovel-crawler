@@ -12,6 +12,9 @@ from telegram.ext import (CommandHandler, ConversationHandler, Filters,
 from ..core.app import App
 from ..sources import crawler_list
 from ..utils.uploader import upload
+from ..utils.otp_auth import (otpSecretKey,
+                                       otpURI,
+                                       otpCode)
 # from .tg_vip import whitelist
 
 logger = logging.getLogger('TELEGRAM_BOT')
@@ -48,9 +51,13 @@ class TelegramBot:
         # Add a command helper for help
         dp.add_handler(CommandHandler('help', self.show_help))
 
-        #
+        # Add start and cancel command
         dp.add_handler(CommandHandler('start', self.init_app, pass_user_data=True))
         dp.add_handler(CommandHandler('cancel', self.destroy_app, pass_user_data=True))
+
+        # OTP
+        dp.add_handler(CommandHandler('keygen', self.keygen))
+        dp.add_handler(CommandHandler('otp' self.otp_verify))
 
         # Add conversation handler with states
         conv_handler = ConversationHandler(
@@ -134,6 +141,32 @@ class TelegramBot:
         # SIGTERM or SIGABRT. This should be used most of the time, since
         # start_polling() is non-blocking and will stop the bot gracefully.
         self.updater.idle()
+    # end def
+
+    def keygen(self, bot, update):
+        key = otpSecretKey()
+        if update.message.from_user.username not in whitelist :
+            update.message.reply_text(
+                'Sorry you\'re not my master, you\'re not allowed to use this command \n'
+            )
+            self.destroy_app(bot, update, user_data)
+        else:
+            update.message.reply_text(
+                '%s' % key
+            )
+    # end def
+
+    def get_otp(self, bot, update):
+        otp_code = otpCode()
+        if update.message.from_user.username not in whitelist :
+            update.message.reply_text(
+                'Sorry you\'re not my master, you\'re not allowed to use this command \n'
+            )
+            self.destroy_app(bot, update, user_data)
+        else:
+            update.message.reply_text(
+                '%s' % otp_code
+            )
     # end def
 
     def error_handler(self, bot, update, error):
