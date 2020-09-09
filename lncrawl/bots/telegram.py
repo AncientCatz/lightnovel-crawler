@@ -57,7 +57,7 @@ class TelegramBot:
 
         # OTP
         dp.add_handler(CommandHandler('keygen', self.keygen))
-        dp.add_handler(CommandHandler('otp' self.otp_verify))
+        dp.add_handler(CommandHandler('otp' self.get_otp))
 
         # Add conversation handler with states
         conv_handler = ConversationHandler(
