@@ -182,12 +182,13 @@ class TelegramBot:
     # end def
 
     def auth_user(self, bot, update, user_data):
+        app = user_data.get('app')
         update.message.reply_text(
             'Enter your OTP code',
             reply_markup=ForceReply()
         )
-        otp_ = update.message.text
-        verify = otpVerify(otp_)
+        otp = update.message.text
+        verify = otpVerify(otp)
         if verify == False:
             update.message.reply_text(
                 'Sorry the OTP code you entered is invalid'
