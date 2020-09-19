@@ -163,6 +163,7 @@ class TelegramBot:
         else:
             update.message.reply_text(
                 '%s' % key
+            )
         # end if
     # end def
 
