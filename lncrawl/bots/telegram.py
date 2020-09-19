@@ -196,6 +196,7 @@ class TelegramBot:
         elif verify == True:
             update.message.reply_text(
                 'Authenticated, you can use our service for once'
+            )
             app = App()
             app.initialize()
             user_data['app'] = app
