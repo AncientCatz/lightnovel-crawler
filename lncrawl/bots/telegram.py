@@ -152,7 +152,7 @@ class TelegramBot:
         else:
             update.message.reply_text(
                 '%s' % key
-            )
+        # end if
     # end def
 
     def get_otp(self, bot, update):
@@ -166,6 +166,22 @@ class TelegramBot:
             update.message.reply_text(
                 '%s' % otp_code
             )
+        # end if
+    # end def
+
+    def otp_verify(self, bot, update, otp):
+        verify = otpVerify(otp)
+        if verify == False:
+            update.message.reply_text(
+                'Sorry the OTP code you entered is invalid'
+            )
+            return False
+        elif verify == True:
+            update.message.reply_text(
+                'Authenticated, you can use our service for once'
+     
+            return True
+        # end if
     # end def
 
     def error_handler(self, bot, update, error):
@@ -206,7 +222,6 @@ class TelegramBot:
         app.initialize()
         user_data['app'] = app
         update.message.reply_text('A new session is created.')
-
         if update.message.from_user.username not in whitelist :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
