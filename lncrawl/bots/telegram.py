@@ -181,7 +181,7 @@ class TelegramBot:
         # end if
     # end def
 
-    def user_auth(self, bot, update, user_data):
+    def auth_user(self, bot, update, user_data):
         update.message.reply_text(
             'Enter your OTP code',
             reply_markup=ForceReply()
