@@ -255,7 +255,7 @@ class TelegramBot:
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
                 'Contact to my master @AncientCatz to get OTP code \n'
             )
-            return 'auth_user'
+            return 'user_auth'
         else :
             app = App()
             app.initialize()
