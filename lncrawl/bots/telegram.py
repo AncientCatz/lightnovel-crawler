@@ -5,7 +5,7 @@ import re
 import shutil
 from urllib.parse import urlparse
 
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, ForceReply
 from telegram.ext import (CommandHandler, ConversationHandler, Filters,
                           Handler, MessageHandler, RegexHandler, Updater)
 
@@ -31,8 +31,15 @@ available_formats = [
 """
 Whitelist users
 """
-
 whitelist = [
+    # 'AncientCatz',
+    # 'dindaresty3',
+]
+
+"""
+Master
+"""
+master = [
     'AncientCatz',
 ]
 
@@ -62,13 +69,17 @@ class TelegramBot:
         conv_handler = ConversationHandler(
             entry_points=[
                 CommandHandler('start', self.init_app, pass_user_data=True),
-                MessageHandler(
-                    Filters.text, self.handle_novel_url, pass_user_data=True),
+                # MessageHandler(
+                    # Filters.text, self.handle_novel_url, pass_user_data=True),
             ],
             fallbacks=[
                 CommandHandler('cancel', self.destroy_app, pass_user_data=True),
             ],
             states={
+                'auth_user': [
+                    MessageHandler(
+                        Filters.text, self.auth_user, pass_user_data=True),
+                ],
                 'handle_novel_url': [
                     MessageHandler(
                         Filters.text, self.handle_novel_url, pass_user_data=True),
@@ -144,7 +155,7 @@ class TelegramBot:
 
     def keygen(self, bot, update):
         key = otpSecretKey()
-        if update.message.from_user.username not in whitelist :
+        if update.message.from_user.username not in master :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use this command \n'
             )
@@ -157,7 +168,7 @@ class TelegramBot:
 
     def get_otp(self, bot, update):
         otp_code = otpCode()
-        if update.message.from_user.username not in whitelist :
+        if update.message.from_user.username not in master :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use this command \n'
             )
@@ -169,18 +180,33 @@ class TelegramBot:
         # end if
     # end def
 
-    def otp_verify(self, bot, update, otp):
+    def user_auth(self, bot, update, user_data):
+        update.message.reply_text(
+            'Enter your OTP code',
+            reply_markup=ForceReply()
+        )
+        otp = update.message.text
         verify = otpVerify(otp)
         if verify == False:
             update.message.reply_text(
                 'Sorry the OTP code you entered is invalid'
             )
-            return False
+            return ConversationHandler.END
         elif verify == True:
             update.message.reply_text(
                 'Authenticated, you can use our service for once'
-     
-            return True
+            app = App()
+            app.initialize()
+            user_data['app'] = app
+            update.message.reply_text('A new session is created.')
+
+            update.message.reply_text(
+                'I recognize input of these two categories:\n'
+                '- Profile page url of a lightnovel.\n'
+                '- A query to search your lightnovel.\n'
+                'Enter whatever you want or send /cancel to stop.'
+            )
+            return 'handle_novel_url'
         # end if
     # end def
 
@@ -218,17 +244,22 @@ class TelegramBot:
             self.destroy_app(bot, update, user_data)
         # end def
 
-        app = App()
-        app.initialize()
-        user_data['app'] = app
-        update.message.reply_text('A new session is created.')
+#        app = App()
+#        app.initialize()
+#        user_data['app'] = app
+#        update.message.reply_text('A new session is created.')
         if update.message.from_user.username not in whitelist :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
-                'Contact to my master @AncientCatz \n'
+                'Contact to my master @AncientCatz to get OTP code \n'
             )
-            self.destroy_app(bot, update, user_data)
+            return 'auth_user'
         else :
+            app = App()
+            app.initialize()
+            user_data['app'] = app
+            update.message.reply_text('A new session is created.')
+
             update.message.reply_text(
                 'I recognize input of these two categories:\n'
                 '- Profile page url of a lightnovel.\n'
