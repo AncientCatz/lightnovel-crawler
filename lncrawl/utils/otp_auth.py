@@ -29,3 +29,14 @@ def otpCode():
     # end if
     return pyotp_now
 # end def
+
+def otpVerify(otp):
+    key = os.getenv('OTP_SECRET_KEY', '')
+    if key == None:
+        pyotp_verify = False
+    else:
+        totp = pyotp.TOTP(key)
+        pyotp_verify = totp.verify(your_code)
+    # end if
+    return pyotp_verify
+# end def
