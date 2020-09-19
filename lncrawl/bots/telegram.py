@@ -39,7 +39,7 @@ whitelist = [
 """
 Master
 """
-my_master = [
+master = [
     'AncientCatz',
 ]
 
@@ -168,7 +168,7 @@ class TelegramBot:
 
     def get_otp(self, bot, update):
         otp_code = otpCode()
-        if update.message.from_user.username not in my_master :
+        if update.message.from_user.username not in master :
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use this command \n'
             )
@@ -185,8 +185,8 @@ class TelegramBot:
             'Enter your OTP code',
             reply_markup=ForceReply()
         )
-        otp = update.message.text
-        verify = otpVerify(otp)
+        otp_ = update.message.text
+        verify = otpVerify(otp_)
         if verify == False:
             update.message.reply_text(
                 'Sorry the OTP code you entered is invalid'
