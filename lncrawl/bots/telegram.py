@@ -183,10 +183,6 @@ class TelegramBot:
 
     def auth_user(self, bot, update, user_data):
         app = user_data.get('app')
-        update.message.reply_text(
-            'Enter your OTP code',
-            reply_markup=ForceReply()
-        )
         otp = update.message.text
         verify = otpVerify(otp)
         if verify == False:
@@ -255,6 +251,10 @@ class TelegramBot:
             update.message.reply_text(
                 'Sorry you\'re not my master, you\'re not allowed to use my services \n'
                 'Contact to my master @AncientCatz to get OTP code \n'
+            )
+            update.message.reply_text(
+                'Enter your OTP code',
+                reply_markup=ForceReply()
             )
             return self.auth_user(bot, update, user_data)
         else :
