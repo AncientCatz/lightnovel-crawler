@@ -184,28 +184,31 @@ class TelegramBot:
 
     def auth_user(self, bot, update, user_data):
         app = user_data.get('app')
-        verify = otpVerify(update.message.text)
-        if verify == False:
-            update.message.reply_text(
-                'Sorry the OTP code you entered is invalid'
-            )
-            return ConversationHandler.END
-        elif verify == True:
-            update.message.reply_text(
-                'Authenticated, you can use our service for once'
-            )
-            app = App()
-            app.initialize()
-            user_data['app'] = app
-            update.message.reply_text('A new session is created.')
+        otp = update.message.text
+        if otp:
+            verify = otpVerify(otp)
+            if verify == False:
+                update.message.reply_text(
+                    'Sorry the OTP code you entered is invalid'
+                )
+                return ConversationHandler.END
+            elif verify == True:
+                update.message.reply_text(
+                    'Authenticated, you can use our service for once'
+                )
+                app = App()
+                app.initialize()
+                user_data['app'] = app
+                update.message.reply_text('A new session is created.')
 
-            update.message.reply_text(
-                'I recognize input of these two categories:\n'
-                '- Profile page url of a lightnovel.\n'
-                '- A query to search your lightnovel.\n'
-                'Enter whatever you want or send /cancel to stop.'
-            )
-            return 'handle_novel_url'
+                update.message.reply_text(
+                    'I recognize input of these two categories:\n'
+                    '- Profile page url of a lightnovel.\n'
+                    '- A query to search your lightnovel.\n'
+                    'Enter whatever you want or send /cancel to stop.'
+                )
+                return 'handle_novel_url'
+            # end if
         # end if
     # end def
 
