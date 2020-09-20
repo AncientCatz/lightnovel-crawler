@@ -33,7 +33,7 @@ available_formats = [
 Whitelist users
 """
 whitelist = [
-    # 'AncientCatz',
+    'AncientCatz',
     # 'dindaresty3',
 ]
 
