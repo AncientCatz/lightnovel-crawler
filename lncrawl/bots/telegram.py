@@ -13,8 +13,9 @@ from ..core.app import App
 from ..sources import crawler_list
 from ..utils.uploader import upload
 from ..utils.otp_auth import (otpSecretKey,
-                                       otpURI,
-                                       otpCode)
+                              otpURI,
+                              otpCode
+                              otpVerify)
 # from .tg_vip import whitelist
 
 logger = logging.getLogger('TELEGRAM_BOT')
@@ -253,7 +254,7 @@ class TelegramBot:
             )
             update.message.reply_text(
                 'Enter your OTP code',
-                # reply_markup=ForceReply()
+                reply_markup=ForceReply()
             )
             return self.auth_user(bot, update, user_data)
         else :
