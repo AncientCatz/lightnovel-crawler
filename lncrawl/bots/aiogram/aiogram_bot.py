@@ -40,7 +40,7 @@ class AiogramBot:
         # Start processing using this bot. It should use self methods to take
         # inputs and self.app methods to process them.
         #
-        # self.app = App()
+        self.app = App()
         # self.app.initialize()
         #
         print("Aiogram is online!")
@@ -50,7 +50,34 @@ class AiogramBot:
 
     @dp.message_handler(Command('start'))
     async def start(message: types.Message):
-        await message.answer('Hello')
+        await message.answer(
+            'Hi!\n'
+            'I\'m Lightnovel Crawler! I can help you generate lightnovels in EPUB format, etc.'
+            'Send /new to start a new session.'
+        )
+    # end def
+
+    @dp.message_handler(Command('help'))
+    async def start(message: types.Message):
+        await message.answer(
+            'Send /new to start a new session.'
+        )
+    # end def
+
+    @dp.message_handler(Command('new'))
+    async def new(message: types.Message):
+        await LNCrawl.smelt.set()
+
+        app.initialize()
+        user_data['app'] = app
+        await message.answer('A new session is created.')
+
+        await message.answer(
+            'I recognize input of these two categories:\n'
+            '- Profile page url of a lightnovel.\n'
+            '- A query to search your lightnovel.\n'
+            'Enter whatever you want or send /cancel to stop.'
+        )
 
     def get_novel_url(self):
         # Returns a novel page url or a query
