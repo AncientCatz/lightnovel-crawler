@@ -3,6 +3,7 @@
 supported_bots = [
     'console',
     'telegram',
+    'aiogram',
     'discord',
     'test',
 ]
