@@ -153,7 +153,7 @@ class AiogramBot:
         await LNCrawl.handle_crawler_to_search.set()
     # end def
 
-    @dp.message_handler(state=LNCrawl.handle_crawlers_to_search, commands=['skip'])
+    @dp.message_handler(state=LNCrawl.handle_crawler_to_search, commands=['skip'])
     async def handle_crawler_to_search(message: types.Message, state: FSMContext):
         # app = user_data.get('app')
 
