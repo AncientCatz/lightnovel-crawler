@@ -204,23 +204,17 @@ class AiogramBot:
         # end if
 
         keyboard_markup = types.ReplyKeyboardMarkup(row_width=3)
-        # buttons = [
-        #         [
-        #             '%d. %s (in %d sources)' % (
-        #                 index + 1, res['title'], len(res['novels'])
-        #             )
-        #         ] for index, res in enumerate(app.search_results)
-        #     ]
-        await message.answer(
-            'Choose any one of the following novels,' +
-            ' or send /cancel to stop this session.',
-            reply_markup=keyboard.add(*(types.KeyboardButton(text) for text in str(([
+        buttons = (
                 [
                     '%d. %s (in %d sources)' % (
                         index + 1, res['title'], len(res['novels'])
                     )
                 ] for index, res in enumerate(app.search_results)
-            ])))),
+            )
+        await message.answer(
+            'Choose any one of the following novels,' +
+            ' or send /cancel to stop this session.',
+            reply_markup=keyboard.add(*(types.KeyboardButton(text) for text in buttons)),
         )
 
         await LNCrawl.handle_select_novel.set()
