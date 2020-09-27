@@ -82,7 +82,6 @@ class AiogramBot:
         await LNCrawl.smelt.set()
 
         app.initialize()
-        user_data['app'] = app
         await message.answer('A new session is created.')
 
         await message.answer(
