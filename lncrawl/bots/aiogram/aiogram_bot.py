@@ -31,7 +31,7 @@ API_TOKEN = os.getenv('TELEGRAM_TOKEN', '')
 storage = MemoryStorage()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
-
+app = App()
 class LNCrawl(StatesGroup):
     smelt = State()
 
@@ -41,7 +41,7 @@ class AiogramBot:
         # Start processing using this bot. It should use self methods to take
         # inputs and self.app methods to process them.
         #
-        self.app = App()
+        # self.app = App()
         # self.app.initialize()
         #
         print("Aiogram is online!")
@@ -64,6 +64,18 @@ class AiogramBot:
             'Send /new to start a new session.'
         )
     # end def
+
+    @dp.message_handler(state=LNCrawl.smelt, commands='cancel')
+    async def cancel_handler(message: types.Message, state: FSMContext):
+        current_state = await state.get_state()
+        if current_state is None:
+            return
+
+        logging.info('Cancelling state %r', current_state)
+        # Cancel state and inform user about it
+        await state.finish()
+        # And remove keyboard (just in case)
+        await message.reply('Session closed.', reply_markup=types.ReplyKeyboardRemove())
 
     @dp.message_handler(Command('new'))
     async def new(message: types.Message):
