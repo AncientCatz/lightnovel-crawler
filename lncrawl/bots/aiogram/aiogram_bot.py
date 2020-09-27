@@ -128,7 +128,7 @@ class AiogramBot:
         else:
             msg = await message.reply('Got your query text')
             keyboard_markup = types.ReplyKeyboardMarkup(row_width=3)
-            buttons = ''
+            buttons = (None, None)
 
             def make_button(i, url):
                 return '%d - %s' % (i + 1, urlparse(url).hostname)
