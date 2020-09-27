@@ -27,14 +27,15 @@ available_formats = [
 # TODO: It is recommended to implemented all methods. But you can skip those
 #       Which return values by default.
 # Initialize bot and dispatcher
+API_TOKEN = os.getenv('TELEGRAM_TOKEN', '')
 storage = MemoryStorage()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
-class SampleBot:
+class AiogramBot:
     class LNCrawl(StatesGroup):
         smelt = State()
-    def start(self):
+    def main(self):
         # TODO: must be implemented
         # Start processing using this bot. It should use self methods to take
         # inputs and self.app methods to process them.
@@ -42,11 +43,14 @@ class SampleBot:
         # self.app = App()
         # self.app.initialize()
         #
-        if __name__ == '__main__':
-            print("Telegram bot online!")
-            executor.start_polling(dp, skip_updates=True)
+        print("Aiogram is online!")
+        executor.start_polling(dp, skip_updates=True)
         # Checkout console.py for a sample implementation
     # end def
+
+    @dp.message_handler(Command('start'))
+    async def start(message: types.Message):
+        await message.answer('Hello')
 
     def get_novel_url(self):
         # Returns a novel page url or a query

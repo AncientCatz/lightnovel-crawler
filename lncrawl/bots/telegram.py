@@ -12,12 +12,8 @@ from telegram.ext import (CommandHandler, ConversationHandler, Filters,
 from ..core.app import App
 from ..sources import crawler_list
 from ..utils.uploader import upload
-from ..utils.otp_auth import (otpSecretKey,
-                                       otpURI,
-                                       otpCode)
-# from .tg_vip import whitelist
 
-logger = logging.getLogger('TELEGRAM_BOT')
+logger = logging.getLogger(__name__)
 
 
 available_formats = [
@@ -25,16 +21,9 @@ available_formats = [
     'text',
     'web',
     'mobi',
-    'azw3',
+    'pdf',
 ]
 
-"""
-Whitelist users
-"""
-
-whitelist = [
-    'AncientCatz',
-]
 
 class TelegramBot:
     def start(self):
@@ -50,14 +39,6 @@ class TelegramBot:
         # Add a command helper for help
         dp.add_handler(CommandHandler('help', self.show_help))
 
-        # Add start and cancel command
-        dp.add_handler(CommandHandler('start', self.init_app, pass_user_data=True))
-        dp.add_handler(CommandHandler('cancel', self.destroy_app, pass_user_data=True))
-
-        # OTP
-        dp.add_handler(CommandHandler('keygen', self.keygen))
-        dp.add_handler(CommandHandler('otp', self.get_otp))
-
         # Add conversation handler with states
         conv_handler = ConversationHandler(
             entry_points=[
@@ -66,7 +47,8 @@ class TelegramBot:
                     Filters.text, self.handle_novel_url, pass_user_data=True),
             ],
             fallbacks=[
-                CommandHandler('cancel', self.destroy_app, pass_user_data=True),
+                CommandHandler('cancel', self.destroy_app,
+                               pass_user_data=True),
             ],
             states={
                 'handle_novel_url': [
@@ -74,7 +56,8 @@ class TelegramBot:
                         Filters.text, self.handle_novel_url, pass_user_data=True),
                 ],
                 'handle_crawler_to_search': [
-                    CommandHandler('skip', self.handle_crawler_to_search, pass_user_data=True),
+                    CommandHandler(
+                        'skip', self.handle_crawler_to_search, pass_user_data=True),
                     MessageHandler(
                         Filters.text, self.handle_crawler_to_search, pass_user_data=True),
                 ],
@@ -142,48 +125,6 @@ class TelegramBot:
         self.updater.idle()
     # end def
 
-    def keygen(self, bot, update):
-        key = otpSecretKey()
-        if update.message.from_user.username not in whitelist :
-            update.message.reply_text(
-                'Sorry you\'re not my master, you\'re not allowed to use this command \n'
-            )
-            self.destroy_app(bot, update, user_data)
-        else:
-            update.message.reply_text(
-                '%s' % key
-        # end if
-    # end def
-
-    def get_otp(self, bot, update):
-        otp_code = otpCode()
-        if update.message.from_user.username not in whitelist :
-            update.message.reply_text(
-                'Sorry you\'re not my master, you\'re not allowed to use this command \n'
-            )
-            self.destroy_app(bot, update, user_data)
-        else:
-            update.message.reply_text(
-                '%s' % otp_code
-            )
-        # end if
-    # end def
-
-    def otp_verify(self, bot, update, otp):
-        verify = otpVerify(otp)
-        if verify == False:
-            update.message.reply_text(
-                'Sorry the OTP code you entered is invalid'
-            )
-            return False
-        elif verify == True:
-            update.message.reply_text(
-                'Authenticated, you can use our service for once'
-     
-            return True
-        # end if
-    # end def
-
     def error_handler(self, bot, update, error):
         """Log Errors caused by Updates."""
         logger.warn('Error: %s\nCaused by: %s', error, update)
@@ -222,75 +163,61 @@ class TelegramBot:
         app.initialize()
         user_data['app'] = app
         update.message.reply_text('A new session is created.')
-        if update.message.from_user.username not in whitelist :
-            update.message.reply_text(
-                'Sorry you\'re not my master, you\'re not allowed to use my services \n'
-                'Contact to my master @AncientCatz \n'
-            )
-            self.destroy_app(bot, update, user_data)
-        else :
-            update.message.reply_text(
-                'I recognize input of these two categories:\n'
-                '- Profile page url of a lightnovel.\n'
-                '- A query to search your lightnovel.\n'
-                'Enter whatever you want or send /cancel to stop.'
-            )
-            return 'handle_novel_url'
+
+        update.message.reply_text(
+            'I recognize input of these two categories:\n'
+            '- Profile page url of a lightnovel.\n'
+            '- A query to search your lightnovel.\n'
+            'Enter whatever you want or send /cancel to stop.'
+        )
+        return 'handle_novel_url'
     # end def
 
     def handle_novel_url(self, bot, update, user_data):
-        if update.message.from_user.username not in whitelist :
+        if user_data.get('job'):
+            app = user_data.get('app')
+            job = user_data.get('job')
             update.message.reply_text(
-                'Sorry you\'re not my master, you\'re not allowed to use my services \n'
-                'Contact to my master @AncientCatz \n'
+                '%s\n'
+                '%d out of %d chapters has been downloaded.\n'
+                'To terminate this session send /cancel.'
+                % (user_data.get('status'), app.progress, len(app.chapters))
             )
-            self.destroy_app(bot, update, user_data)
-        else :
-            if user_data.get('job'):
+        else:
+            if user_data.get('app'):
                 app = user_data.get('app')
-                job = user_data.get('job')
-                update.message.reply_text(
-                    '%s\n'
-                    '%d out of %d chapters has been downloaded.\n'
-                    'To terminate this session send /cancel.'
-                    % (user_data.get('status'), app.progress, len(app.chapters))
-                )
             else:
-                if user_data.get('app'):
-                    app = user_data.get('app')
-                else:
-                    app = App()
-                    app.initialize()
-                    user_data['app'] = app
-                # end if
-                app.user_input = update.message.text.strip()
-
-                try:
-                    app.init_search()
-                except Exception:
-                    update.message.reply_text(
-                        'Sorry! I only recognize these sources:\n' +
-                        'https://github.com/dipu-bd/lightnovel-crawler#c3-supported-sources'
-                    )  # '\n'.join(['- %s' % x for x in crawler_list.keys()]))
-                    update.message.reply_text(
-                        'Enter something again or send /cancel to stop.')
-                    return 'handle_novel_url'
-                # end try
-
-                if app.crawler:
-                    update.message.reply_text('Got your page link')
-                    return self.get_novel_info(bot, update, user_data)
-                # end if
-
-                if len(app.user_input) < 5:
-                    update.message.reply_text(
-                        'Please enter a longer query text (at least 5 letters).')
-                    return 'handle_novel_url'
-                # end if
-
-                update.message.reply_text('Got your query text')
-                return self.show_crawlers_to_search(bot, update, user_data)
+                app = App()
+                app.initialize()
+                user_data['app'] = app
             # end if
+            app.user_input = update.message.text.strip()
+
+            try:
+                app.init_search()
+            except Exception:
+                update.message.reply_text(
+                    'Sorry! I only recognize these sources:\n' +
+                    'https://github.com/dipu-bd/lightnovel-crawler#c3-supported-sources'
+                )  # '\n'.join(['- %s' % x for x in crawler_list.keys()]))
+                update.message.reply_text(
+                    'Enter something again or send /cancel to stop.')
+                return 'handle_novel_url'
+            # end try
+
+            if app.crawler:
+                update.message.reply_text('Got your page link')
+                return self.get_novel_info(bot, update, user_data)
+            # end if
+
+            if len(app.user_input) < 5:
+                update.message.reply_text(
+                    'Please enter a longer query text (at least 5 letters).')
+                return 'handle_novel_url'
+            # end if
+
+            update.message.reply_text('Got your query text')
+            return self.show_crawlers_to_search(bot, update, user_data)
         # end if
     # end def
 
@@ -727,31 +654,30 @@ class TelegramBot:
             app.compress_books()
         # end if
 
-        first_id = app.chapters[0]['id']
-        last_id = app.chapters[-1]['id']
-        vol = '%s-%s' % (first_id, last_id)
         for archive in app.archived_outputs:
-            link_id = upload(archive)
-            if link_id:
-                update.message.reply_text(
-                    'Get your file here:'
-                    'https://drive.google.com/open?id=%s' % link_id
-                )
             file_size = os.stat(archive).st_size
             if file_size < 49.99 * 1024 * 1024:
                 update.message.reply_document(
                     open(archive, 'rb'),
-                    timeout=24 * 3600, # 24 hours
+                    timeout=24 * 3600,  # 24 hours
                 )
             else:
                 update.message.reply_text(
-                    'File size more than 50 MB so cannot be sent via telegram bot api check google drive link only')
-            
-            if os.path.exists(archive):
-                os.remove(archive)
-            update.message.reply_text(
-                'This file will be deleted on server')
-            
+                    'File size more than 50 MB so cannot be sent via telegram bot.\n' +
+                    'Uploading to google drive...')
+                link_id = upload(archive)
+                if link_id:
+                    update.message.reply_text(
+                        'Get your file here:'
+                        'https://drive.google.com/open?id=%s' % link_id
+                    )
+                # end if
+            # end if
+
+            # if os.path.exists(archive):
+            #     os.remove(archive)
+            # update.message.reply_text(
+            #     'This file will be deleted on server')
         # end for
 
         self.destroy_app(bot, update, user_data)

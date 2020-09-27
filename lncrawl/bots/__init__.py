@@ -18,6 +18,9 @@ def run_bot(bot):
     elif bot == 'telegram':
         from ..bots.telegram import TelegramBot
         TelegramBot().start()
+    elif bot == 'aiogram':
+        from ..bots.aiogram import AiogramBot
+        AiogramBot().main()
     elif bot == 'discord':
         from ..bots.discord import DiscordBot
         DiscordBot().start_bot()
