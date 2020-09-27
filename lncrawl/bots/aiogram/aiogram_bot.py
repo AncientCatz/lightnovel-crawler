@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import re
 import time
+import shutil
+from urllib.parse import urlparse
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
