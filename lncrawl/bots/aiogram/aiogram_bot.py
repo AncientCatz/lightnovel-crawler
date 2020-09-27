@@ -58,8 +58,8 @@ class AiogramBot:
     @dp.message_handler(Command('start'))
     async def start(message: types.Message):
         await message.answer(
-            'Hi!\n'
-            'I\'m Lightnovel Crawler! I can help you generate lightnovels in EPUB format, etc.'
+            'Hi!\n' +
+            'I\'m Lightnovel Crawler! I can help you generate lightnovels in EPUB format, etc.\n' +
             'Send /new to start a new session.'
         )
     # end def
@@ -123,34 +123,28 @@ class AiogramBot:
         # end if
 
         else:
-            await message.reply('Got your query text')
-            await LNCrawl.show_crawlers_to_search.set()
-        # end else
-    # end def
+            msg = message.reply('Got your query text')
+            keyboard_markup = types.ReplyKeyboardMarkup(row_width=3)
+            buttons = []
 
-    @dp.message_handler(state=LNCrawl.show_crawlers_to_search)
-    async def show_crawlers_to_search(message: types.Message, state: FSMContext):
-        keyboard_markup = types.ReplyKeyboardMarkup(row_width=3)
-        buttons = []
+            def make_button(i, url):
+                return '%d - %s' % (i + 1, urlparse(url).hostname)
+            # end def
+            for i in range(1, len(app.crawler_links) + 1, 2):
+                buttons += [[
+                    make_button(i - 1, app.crawler_links[i - 1]),
+                    make_button(i, app.crawler_links[i]) if i < len(
+                        app.crawler_links) else '',
+                ]]
+            # end for
 
-        def make_button(i, url):
-            return '%d - %s' % (i + 1, urlparse(url).hostname)
-        # end def
-        for i in range(1, len(app.crawler_links) + 1, 2):
-            buttons += [[
-                make_button(i - 1, app.crawler_links[i - 1]),
-                make_button(i, app.crawler_links[i]) if i < len(
-                    app.crawler_links) else '',
-            ]]
-        # end for
-
-        keyboard_markup.add(*(types.KeyboardButton(text) for text in buttons))
-        await message.answer(
-            'Choose where to search for your novel, \n' +
-            'or send /skip to search everywhere.',
-            reply_markup=keyboard_markup,
-        )
-        await LNCrawl.handle_crawler_to_search.set()
+            keyboard_markup.add(*(types.KeyboardButton(text) for text in buttons))
+            await message.edit_text(
+                'Choose where to search for your novel, \n' +
+                'or send /skip to search everywhere.',
+                reply_markup=keyboard_markup,
+            )
+            await LNCrawl.handle_crawler_to_search.set()
     # end def
 
     @dp.message_handler(state=LNCrawl.handle_crawler_to_search, commands=['skip'])
