@@ -32,9 +32,10 @@ storage = MemoryStorage()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
+class LNCrawl(StatesGroup):
+    smelt = State()
+
 class AiogramBot:
-    class LNCrawl(StatesGroup):
-        smelt = State()
     def main(self):
         # TODO: must be implemented
         # Start processing using this bot. It should use self methods to take
