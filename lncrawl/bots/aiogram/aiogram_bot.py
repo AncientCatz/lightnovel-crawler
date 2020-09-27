@@ -128,20 +128,20 @@ class AiogramBot:
         else:
             msg = await message.reply('Got your query text')
             keyboard_markup = types.ReplyKeyboardMarkup(row_width=3)
-            buttons = (None, None)
+            buttons = []
 
             def make_button(i, url):
                 return '%d - %s' % (i + 1, urlparse(url).hostname)
             # end def
             for i in range(1, len(app.crawler_links) + 1, 2):
-                buttons += (
+                buttons += [[
                     make_button(i - 1, app.crawler_links[i - 1]),
                     make_button(i, app.crawler_links[i]) if i < len(
                         app.crawler_links) else '',
-                )
+                ]]
             # end for
 
-            keyboard_markup.add(*(types.KeyboardButton(text) for text in buttons))
+            keyboard_markup.add(*(types.KeyboardButton(text) for text in tuple(buttons)))
             await message.edit_text(
                 'Choose where to search for your novel, \n' +
                 'or send /skip to search everywhere.',
@@ -204,17 +204,17 @@ class AiogramBot:
         # end if
 
         keyboard_markup = types.ReplyKeyboardMarkup(row_width=3)
-        buttons = (
+        buttons = [
                 [
                     '%d. %s (in %d sources)' % (
                         index + 1, res['title'], len(res['novels'])
                     )
                 ] for index, res in enumerate(app.search_results)
-            )
+            ]
         await message.answer(
             'Choose any one of the following novels,' +
             ' or send /cancel to stop this session.',
-            reply_markup=keyboard.add(*(types.KeyboardButton(text) for text in buttons)),
+            reply_markup=keyboard.add(*(types.KeyboardButton(text) for text in tuple(buttons))),
         )
 
         await LNCrawl.handle_select_novel.set()
