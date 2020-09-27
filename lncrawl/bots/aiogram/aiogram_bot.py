@@ -126,7 +126,7 @@ class AiogramBot:
         # end if
 
         else:
-            msg = message.reply('Got your query text')
+            msg = await message.reply('Got your query text')
             keyboard_markup = types.ReplyKeyboardMarkup(row_width=3)
             buttons = []
 
