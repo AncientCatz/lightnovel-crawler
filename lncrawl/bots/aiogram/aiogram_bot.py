@@ -89,7 +89,7 @@ class AiogramBot:
 
         app.initialize()
         await message.answer('A new session is created.')
-        async with state.proxy() as data:
+        async with state.proxy() as user_data:
             user_data['app'] = app
         await message.answer(
             'I recognize input of these two categories:\n' +
@@ -202,7 +202,7 @@ class AiogramBot:
         # end if
 
         if len(app.search_results) == 1:
-            data['selected'] = app.search_results[0]
+            user_data['selected'] = app.search_results[0]
             await LNCrawler.show_source_selection.set()
         # end if
 
